@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();  // creates an instance of an express application
+const nunjucks = require('nunjucks');
 
+
+const people = [{name: 'Shon'}, {name: 'Matt'}, {name: 'Arik'}];
 // needed for getting access to request body of POST / PUT req's
 // var bodyParser = require('body-parser');
 
@@ -21,7 +24,10 @@ route handler of the root path terminates the request-response cycle.
 app.use('/', function(req, res, next){
   // console.log('/');
   if(res.status(200)) console.log(200);
-  next();
+  // nunjucks.render('index.html');
+  res.render('index', {title: 'Hall of Fame', people: people} );
+
+  // next();
 });
 
 
@@ -49,6 +55,26 @@ app.get('/modernism', function(req, res){
 
 
 
+// nunjucks
+// in some file that is in the root directory of our application... how about app.js?
+var locals = {
+    title: 'An Example',
+    people: [
+        { name: 'Gandalf'},
+        { name: 'Frodo' },
+        { name: 'Hermione'}
+    ]
+};
+nunjucks.configure('views', {noCache: true});
+nunjucks.render('index.html', locals, function (err, output) {
+  if(err) throw err;
+  console.log(output);
+  // res.send(output);
+});
+
+app.set('view engine', 'html'); // have res.render work with html files
+app.engine('html', nunjucks.render); // when giving html files to res.render, tell it to use nunjucks
+nunjucks.configure('views'); // point nunjucks to the proper directory for templates
 
 
 
